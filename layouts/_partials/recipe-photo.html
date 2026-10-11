@@ -1,0 +1,34 @@
+{{- /*
+  Renders a recipe's photo, in order of preference:
+    1. your own photo: an image named cover.* in the recipe's folder, resized to WebP;
+    2. the original author's photo: the `image` URL in front matter, shown from their site;
+    3. a placeholder.
+  The surrounding frame carries the placeholder background, so it also shows if a
+  remote image fails to load.
+  Usage: partial "recipe-photo.html" (dict "page" . "size" "card"|"hero")
+*/ -}}
+{{- $page := .page -}}
+{{- $hero := eq .size "hero" -}}
+{{- $class := cond $hero "hero-photo" "card-photo" -}}
+<div class="photo-frame {{ $class }}">
+{{- with $page.Resources.GetMatch "cover.*" -}}
+  {{- $img := . -}}
+  {{- $sizes := cond $hero (slice "720x405" "1200x675") (slice "480x300" "800x500") -}}
+  {{- $srcset := slice -}}
+  {{- range $sizes -}}
+    {{- $r := $img.Fill (printf "%s webp q78 Center" .) -}}
+    {{- $srcset = $srcset | append (printf "%s %dw" $r.RelPermalink $r.Width) -}}
+  {{- end -}}
+  {{- $default := $img.Fill (printf "%s webp q78 Center" (index $sizes 1)) -}}
+  <img src="{{ $default.RelPermalink }}"
+       srcset="{{ delimit $srcset ", " }}"
+       sizes="{{ cond $hero "(max-width: 760px) 100vw, 720px" "(max-width: 640px) 100vw, 340px" }}"
+       width="{{ $default.Width }}" height="{{ $default.Height }}"
+       alt="{{ $page.Title }}"{{ if not $hero }} loading="lazy"{{ end }}>
+{{- else -}}
+  {{- with $page.Params.image -}}
+  <img src="{{ . }}" alt="{{ $page.Title }}" referrerpolicy="no-referrer"
+       {{- if not $hero }} loading="lazy"{{ end }} onerror="this.remove()">
+  {{- end -}}
+{{- end -}}
+</div>

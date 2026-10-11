@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="{{ site.Language.Locale }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ if .IsHome }}{{ site.Title }}{{ else }}{{ .Title }} · {{ site.Title }}{{ end }}</title>
+  <meta name="description" content="{{ with .Description }}{{ . }}{{ else }}{{ site.Params.description }}{{ end }}">
+  <meta name="color-scheme" content="light dark">
+  <link rel="icon" href="{{ "favicon.svg" | relURL }}" type="image/svg+xml">
+  {{ with resources.Get "css/main.css" | minify | fingerprint }}
+  <link rel="stylesheet" href="{{ .RelPermalink }}" integrity="{{ .Data.Integrity }}">
+  {{ end }}
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="{{ "" | relURL }}">{{ site.Title }}</a>
+      <nav aria-label="Main">
+        <a href="{{ "" | relURL }}">Search</a>
+        <a href="{{ "recipes/" | relURL }}">All recipes</a>
+        <a href="{{ "labels/" | relURL }}">Labels</a>
+      </nav>
+    </div>
+  </header>
+  <main class="wrap">
+    {{ block "main" . }}{{ end }}
+  </main>
+  <footer class="site-footer">
+    <div class="wrap">Recipes are adapted from their original authors. Each page links to its source.</div>
+  </footer>
+  {{ block "scripts" . }}{{ end }}
+</body>
+</html>

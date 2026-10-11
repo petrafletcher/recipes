@@ -1,0 +1,17 @@
+baseURL = "/"
+locale = "en-gb"
+title = "Recipes"
+capitalizeListTitles = false
+disableKinds = ["rss"]
+enableRobotsTXT = true
+
+[params]
+  description = "Our recipe collection, searchable by name, ingredient and label."
+
+# A single "labels" taxonomy. Add labels to a recipe's front matter and Hugo
+# builds a page for each label at /labels/<label>/.
+[taxonomies]
+  label = "labels"
+
+[markup.goldmark.renderer]
+  unsafe = false

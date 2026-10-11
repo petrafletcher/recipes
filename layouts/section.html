@@ -1,0 +1,7 @@
+{{ define "main" }}
+<h1>{{ .Title }}</h1>
+<p class="result-count">{{ len .RegularPages }} recipes</p>
+<div class="cards">
+  {{ range .RegularPages.ByTitle }}{{ partial "recipe-card.html" . }}{{ end }}
+</div>
+{{ end }}

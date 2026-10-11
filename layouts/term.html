@@ -1,0 +1,11 @@
+{{ define "main" }}
+<p class="breadcrumb"><a href="{{ "labels/" | relURL }}">← All labels</a></p>
+<h1>Label: {{ .Title }}</h1>
+<p class="result-count">
+  {{ len .Pages }} {{ cond (eq (len .Pages) 1) "recipe" "recipes" }} ·
+  <a href="{{ "" | relURL }}?labels={{ .Title | lower | urlize }}">Combine with other labels</a>
+</p>
+<div class="cards">
+  {{ range .Pages.ByTitle }}{{ partial "recipe-card.html" . }}{{ end }}
+</div>
+{{ end }}

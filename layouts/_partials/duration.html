@@ -1,0 +1,4 @@
+{{- /* Formats a number of minutes, e.g. 95 → "1 hr 35 min". */ -}}
+{{- $h := div (int .) 60 -}}
+{{- $m := mod (int .) 60 -}}
+{{- if $h }}{{ $h }} hr{{ end }}{{ if and $h $m }} {{ end }}{{ if $m }}{{ $m }} min{{ end -}}

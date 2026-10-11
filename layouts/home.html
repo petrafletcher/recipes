@@ -1,0 +1,33 @@
+{{ define "main" }}
+{{ $recipes := sort (where site.RegularPages "Section" "recipes") "Title" }}
+<section class="search" data-search>
+  <h1>Find a recipe</h1>
+  <label class="visually-hidden" for="q">Search recipes</label>
+  <input id="q" class="search-input" type="search" placeholder="Search by name, ingredient or label…" autocomplete="off">
+
+  <div class="filter-head">
+    <h2>Labels</h2>
+    <button type="button" class="link-button" id="clear" hidden>Clear filters</button>
+  </div>
+  <div class="chips" role="group" aria-label="Filter by label">
+    {{ range site.Taxonomies.labels.Alphabetical }}
+    <button type="button" class="chip" data-label="{{ .Name | lower | urlize }}" aria-pressed="false">
+      {{ .Page.LinkTitle }} <span class="count">{{ .Count }}</span>
+    </button>
+    {{ end }}
+  </div>
+
+  <p class="result-count" id="count" aria-live="polite">{{ len $recipes }} recipes</p>
+</section>
+
+<div class="cards" id="results">
+  {{ range $recipes }}{{ partial "recipe-card.html" . }}{{ end }}
+</div>
+<p class="empty" id="empty" hidden>No recipes match. Try removing a label or changing your search.</p>
+{{ end }}
+
+{{ define "scripts" }}
+{{ with resources.Get "js/search.js" | minify | fingerprint }}
+<script src="{{ .RelPermalink }}" integrity="{{ .Data.Integrity }}" defer></script>
+{{ end }}
+{{ end }}

@@ -1,0 +1,18 @@
+{{- /* data-labels and data-text drive the client-side search on the home page. */ -}}
+{{- $labels := slice -}}
+{{- range .Params.labels }}{{ $labels = $labels | append (. | lower | urlize) }}{{ end -}}
+{{- $text := slice .Title .Description (.Params.source | default "") -}}
+{{- range .Params.labels }}{{ $text = $text | append . }}{{ end -}}
+{{- range .Params.ingredients -}}
+  {{- if reflect.IsMap . }}{{ range .items }}{{ $text = $text | append . }}{{ end }}{{ else }}{{ $text = $text | append . }}{{ end -}}
+{{- end -}}
+<article class="card" data-labels="{{ delimit $labels " " }}" data-text="{{ delimit $text " " | lower }}">
+  <a class="card-photo-link" href="{{ .RelPermalink }}" tabindex="-1">{{ partial "recipe-photo.html" (dict "page" . "size" "card") }}</a>
+  <h3><a href="{{ .RelPermalink }}">{{ .Title }}</a></h3>
+  {{ with .Description }}<p>{{ . }}</p>{{ end }}
+  <p class="meta">
+    {{ with .Params.total_time }}{{ partial "duration.html" . }} · {{ end }}
+    {{ with .Params.source }}{{ . }}{{ end }}
+  </p>
+  {{ partial "labels.html" . }}
+</article>

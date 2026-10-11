@@ -1,0 +1,78 @@
+{{ define "main" }}
+<article class="recipe">
+  <p class="breadcrumb"><a href="{{ "" | relURL }}">← Back to search</a></p>
+  <h1>{{ .Title }}</h1>
+  {{ with .Description }}<p class="lede">{{ . }}</p>{{ end }}
+
+  {{ $cover := .Resources.GetMatch "cover.*" }}
+  {{ if or $cover .Params.image }}
+  <figure class="hero">
+    {{ partial "recipe-photo.html" (dict "page" . "size" "hero") }}
+    {{ if $cover }}
+      {{ with .Params.photo }}
+      <figcaption>
+        Photo{{ with .author }}: {{ . }}{{ end }}
+        {{- with .license }}, {{ with $.Params.photo.license_url }}<a href="{{ . }}" rel="license noopener">{{ $.Params.photo.license }}</a>{{ else }}{{ . }}{{ end }}{{ end }}
+        {{- with .source }}, <a href="{{ . }}" rel="noopener">source</a>{{ end }}
+      </figcaption>
+      {{ end }}
+    {{ else }}
+      <figcaption>Photo: <a href="{{ .Params.source_url }}" rel="noopener">{{ .Params.source | default "original recipe" }}</a></figcaption>
+    {{ end }}
+  </figure>
+  {{ end }}
+
+  {{ with .Params }}
+  {{ if or .prep_time .cook_time .total_time .servings }}
+  <dl class="facts">
+    {{ with .prep_time }}<div><dt>Prep</dt><dd>{{ partial "duration.html" . }}</dd></div>{{ end }}
+    {{ with .cook_time }}<div><dt>Cook</dt><dd>{{ partial "duration.html" . }}</dd></div>{{ end }}
+    {{ with .total_time }}<div><dt>Total</dt><dd>{{ partial "duration.html" . }}</dd></div>{{ end }}
+    {{ with .servings }}<div><dt>Serves</dt><dd>{{ . }}</dd></div>{{ end }}
+  </dl>
+  {{ end }}
+  {{ end }}
+
+  {{ partial "labels.html" . }}
+
+  <section>
+    <h2>Ingredients</h2>
+    {{ $ing := .Params.ingredients }}
+    {{ if not $ing }}
+      <p class="muted">No ingredients saved yet. See the original recipe.</p>
+    {{ else if reflect.IsMap (index $ing 0) }}
+      {{ range $ing }}
+        {{ with .group }}<h3>{{ . }}</h3>{{ end }}
+        {{ partial "ingredient-list.html" .items }}
+      {{ end }}
+    {{ else }}
+      {{ partial "ingredient-list.html" $ing }}
+    {{ end }}
+  </section>
+
+  {{ with .Params.method }}
+  <section>
+    <h2>Method</h2>
+    {{ if reflect.IsMap (index . 0) }}
+      {{ range . }}
+        {{ with .group }}<h3>{{ . }}</h3>{{ end }}
+        <ol class="method">{{ range .steps }}<li>{{ . }}</li>{{ end }}</ol>
+      {{ end }}
+    {{ else }}
+      <ol class="method">{{ range . }}<li>{{ . }}</li>{{ end }}</ol>
+    {{ end }}
+  </section>
+  {{ end }}
+
+  {{ with .Content }}
+  <section>
+    <h2>Notes</h2>
+    {{ . }}
+  </section>
+  {{ end }}
+
+  {{ with .Params.source_url }}
+  <p class="credit">Adapted from <a href="{{ . }}" rel="noopener">{{ $.Params.source | default "the original recipe" }}</a>.</p>
+  {{ end }}
+</article>
+{{ end }}
